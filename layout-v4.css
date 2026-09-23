@@ -1,0 +1,89 @@
+/* Page-level layout: keeps the network as a self-contained section while allowing more content below. */
+html{height:auto;min-height:100%;background:var(--bg)}
+body{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:var(--bg)}
+.top{position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border)}
+
+.app{
+  width:min(1600px,100%);
+  height:clamp(620px,72vh,820px);
+  margin:22px auto 34px;
+  padding:0 18px;
+  display:grid;
+  grid-template-columns:minmax(300px,350px) minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+  position:relative;
+}
+
+/* Bibliography container */
+.explorer{
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 8px 28px #1f29330d;
+  background:var(--surface);
+}
+.explorer-head{flex:0 0 auto;background:var(--surface)}
+.author-list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  padding:7px;
+}
+.author-list::-webkit-scrollbar,.body::-webkit-scrollbar{width:9px}
+.author-list::-webkit-scrollbar-thumb,.body::-webkit-scrollbar-thumb{background:#cbd2d8;border:2px solid transparent;border-radius:999px;background-clip:padding-box}
+.author-list::-webkit-scrollbar-track,.body::-webkit-scrollbar-track{background:transparent}
+
+/* Graph container */
+.stage{
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:0 8px 28px #1f29330d;
+}
+.cy{border-radius:14px;background-color:#fbfcfd}
+.controls{left:14px;bottom:14px}
+.focusbar{left:14px;right:14px;top:14px}
+.pop{top:14px;right:14px}
+.panel{border-radius:0 14px 14px 0;overflow:hidden}
+
+/* Give nodes some breathing room inside the card. */
+.cy canvas{outline:none}
+
+@media(max-width:1100px){
+  .app{grid-template-columns:minmax(280px,315px) minmax(0,1fr);padding:0 14px;gap:12px}
+}
+
+@media(max-width:820px){
+  body{overflow-y:auto}
+  .app{display:block;width:100%;height:auto;margin:12px auto 28px;padding:0 10px}
+  .stage{height:clamp(560px,72vh,720px);border-radius:12px}
+  .cy{border-radius:12px}
+  .explorer{
+    position:fixed;
+    left:0;
+    top:56px;
+    bottom:0;
+    width:min(370px,92vw);
+    height:auto;
+    border-radius:0 14px 14px 0;
+    z-index:120;
+  }
+  .explorer-scrim{position:fixed;inset:56px 0 0;z-index:110}
+  .panel{border-radius:16px 16px 0 0}
+}
+
+@media(max-width:520px){
+  .app{padding:0 7px}
+  .stage{height:clamp(520px,68vh,650px)}
+  .controls{left:9px;bottom:9px}
+  .focusbar{left:9px;right:9px;top:9px}
+}
