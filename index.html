@@ -13,12 +13,10 @@
   <div class="brand"><strong>Rede bibliográfica</strong><small id="status">Carregando…</small></div>
   <div class="toolbar">
     <button id="libraryBtn" class="btn text mobile-library">Bibliografia</button>
-    <input id="q" class="search" placeholder="Buscar autor, artigo, DOI, keyword…">
+    <input id="q" class="search" placeholder="Buscar autor, artigo ou DOI…">
     <div class="chips">
       <button class="chip" data-type="Author"><span class="dot a"></span>Autores</button>
       <button class="chip" data-type="Article"><span class="dot p"></span>Artigos</button>
-      <button class="chip" data-type="Institution"><span class="dot i"></span>Instituições</button>
-      <button class="chip" data-type="Venue"><span class="dot v"></span>Venues</button>
     </div>
     <button id="filters" class="btn text">Filtros</button>
     <button id="info" class="btn text">Info</button>
@@ -45,11 +43,6 @@
       <h3>Filtros</h3>
       <label>De <b id="fromLabel"></b><input id="fromYear" type="range"></label>
       <label>Até <b id="toLabel"></b><input id="toYear" type="range"></label>
-      <div class="rels">
-        <label><input class="rel" data-rel="AUTHORED" type="checkbox" checked> AUTHORED</label>
-        <label><input class="rel" data-rel="AFFILIATED_WITH" type="checkbox" checked> AFFILIATED_WITH</label>
-        <label><input class="rel" data-rel="PUBLISHED_IN" type="checkbox" checked> PUBLISHED_IN</label>
-      </div>
       <button id="reset" class="btn">Limpar filtros</button>
     </div>
     <aside id="panel" class="panel">
@@ -61,8 +54,8 @@
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
-<script src="./app-core.js?v=3"></script>
-<script src="./app-ui.js?v=3"></script>
+<script src="./app-core.js?v=6"></script>
+<script src="./app-ui.js?v=6"></script>
 <script src="./layout-enhancements.js?v=4"></script>
 <script src="./mobile-enhancements.js?v=5"></script>
 </body>
