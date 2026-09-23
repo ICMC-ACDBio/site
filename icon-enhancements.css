@@ -1,0 +1,36 @@
+/* Semantic icons for the simplified Author <-> Article model. */
+.dot.a{
+  width:16px;height:16px;margin-right:6px;border-radius:50%;
+  background-color:var(--author);
+  background-image:url('./assets/person.svg?v=2');
+  background-repeat:no-repeat;background-position:center;background-size:72%;
+  box-shadow:inset 0 0 0 1px #2f638544;
+}
+.dot.p{
+  width:16px;height:18px;margin-right:6px;border-radius:0;background-color:transparent;
+  background-image:url('./assets/document.svg?v=2');
+  background-repeat:no-repeat;background-position:center;background-size:contain;
+}
+
+/* Author rows use the same visual language as author nodes. */
+.author-button{grid-template-columns:18px 22px minmax(0,1fr) auto}
+.author-button::before{
+  content:"";display:block;width:20px;height:20px;border-radius:50%;
+  background-color:var(--author);
+  background-image:url('./assets/person.svg?v=2');
+  background-repeat:no-repeat;background-position:center;background-size:70%;
+  box-shadow:inset 0 0 0 1px #2f638544;
+}
+
+/* Article rows use a real document icon instead of a drawn rectangle. */
+.article-icon{
+  width:16px;height:19px;margin-top:0;border:0;border-radius:0;background:transparent;
+  background-image:url('./assets/document.svg?v=2');
+  background-repeat:no-repeat;background-position:center;background-size:contain;
+}
+.article-icon::after{display:none}
+
+@media(max-width:820px){
+  .dot.a{width:15px;height:15px}
+  .dot.p{width:15px;height:17px}
+}
