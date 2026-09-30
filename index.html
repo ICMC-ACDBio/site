@@ -4,61 +4,117 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ACDBio · Rede bibliográfica</title>
-<link rel="stylesheet" href="./base.css?v=2">
-<link rel="stylesheet" href="./layout-v4.css?v=4">
-<link rel="stylesheet" href="./responsive.css?v=5">
-<link rel="stylesheet" href="./icon-enhancements.css?v=7">
+<link rel="stylesheet" href="./app-redesign.css?v=10">
 </head>
 <body>
-<header class="top">
-  <div class="brand"><strong>Rede bibliográfica</strong><small id="status">Carregando…</small></div>
-  <div class="toolbar">
-    <button id="libraryBtn" class="btn text mobile-library">Bibliografia</button>
-    <input id="q" class="search" placeholder="Buscar autor, artigo ou DOI…">
-    <div class="chips">
-      <button class="chip" data-type="Author"><span class="dot a"></span>Autores</button>
-      <button class="chip" data-type="Article"><span class="dot p"></span>Artigos</button>
+<header class="site-header">
+  <div class="brand-block">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M7 7h.01M17 7h.01M12 17h.01M7 7l5 10M17 7l-5 10M7 7h10"/></svg>
     </div>
-    <button id="filters" class="btn text">Filtros</button>
-    <button id="info" class="btn text">Info</button>
+    <div>
+      <strong>Rede bibliográfica</strong>
+      <span id="statusText">Carregando base…</span>
+    </div>
   </div>
+
+  <div class="top-search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+    <input id="globalSearch" placeholder="Buscar autor, publicação ou DOI">
+  </div>
+
+  <div class="type-filter" role="group" aria-label="Filtrar publicações">
+    <button class="filter-chip active" data-filter="all">Todos</button>
+    <button class="filter-chip" data-filter="Artigo de periódico">Periódicos</button>
+    <button class="filter-chip" data-filter="Artigo em congresso">Congressos</button>
+    <button class="filter-chip" data-filter="Tese de doutorado">Teses</button>
+  </div>
+
+  <button id="openExplorer" class="icon-button mobile-only" aria-label="Abrir explorador">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
 </header>
-<div class="app">
-  <aside id="explorer" class="explorer">
-    <div class="explorer-head">
-      <div class="explorer-kicker">Explorar</div>
-      <div class="explorer-title"><strong>Artigos por autor</strong><span id="explorerCount"></span></div>
-      <input id="authorFilter" class="author-filter" placeholder="Filtrar autores…">
-    </div>
-    <div id="authorList" class="author-list"></div>
-  </aside>
-  <main class="stage">
-    <div id="explorerScrim" class="explorer-scrim"></div>
-    <div id="cy" class="cy"></div>
-    <div id="focusBar" class="focusbar"><div class="focus-card"><button id="back" class="btn back">← Voltar</button><div class="focus-text"><small>Foco no artigo</small><strong id="focusTitle"></strong></div></div></div>
-    <div class="controls">
-      <button id="minus" class="btn">−</button><button id="fit" class="btn">◎</button><button id="plus" class="btn">+</button>
-      <select id="layout"><option value="cose">Orgânico</option><option value="concentric">Radial</option><option value="breadthfirst">Hierárquico</option><option value="circle">Circular</option><option value="grid">Grade</option></select>
-    </div>
-    <div id="filterPop" class="pop" hidden>
-      <h3>Filtros</h3>
-      <label>De <b id="fromLabel"></b><input id="fromYear" type="range"></label>
-      <label>Até <b id="toLabel"></b><input id="toYear" type="range"></label>
-      <button id="reset" class="btn">Limpar filtros</button>
-    </div>
-    <aside id="panel" class="panel">
-      <div class="panel-head"><div><small>GRAPH · CONTEXTO</small><strong id="panelTitle">Visão geral</strong></div><button id="close" class="btn">×</button></div>
-      <div id="panelBody" class="body"></div>
+
+<main class="page-shell">
+  <section class="workspace" aria-label="Explorador da rede bibliográfica">
+    <aside id="explorerPanel" class="card explorer-card">
+      <div class="card-head explorer-head">
+        <div>
+          <span class="eyebrow">Explorar</span>
+          <h2>Rede & publicações</h2>
+        </div>
+        <button id="closeExplorer" class="icon-button panel-close mobile-only" aria-label="Fechar explorador">×</button>
+      </div>
+
+      <div class="segmented">
+        <button class="segment active" data-tab="publications">
+          <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5M10 12h5M10 16h5"></path></svg>
+          Publicações
+        </button>
+        <button class="segment" data-tab="authors">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"></circle><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"></path></svg>
+          Autores
+        </button>
+      </div>
+
+      <div class="panel-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+        <input id="sideSearch" placeholder="Filtrar lista">
+      </div>
+
+      <div id="explorerList" class="explorer-list"></div>
     </aside>
-    <div id="loading" class="loading">Carregando rede…</div>
-    <div id="error" class="error" hidden><b>Falha ao carregar a base</b><small id="errorText"></small></div>
-  </main>
-</div>
+
+    <section class="card graph-card">
+      <div class="graph-head">
+        <div>
+          <span class="eyebrow">Mapa relacional</span>
+          <h2 id="graphTitle">Autores ↔ Publicações</h2>
+        </div>
+        <div class="legend">
+          <span><i class="legend-icon person-mini"></i> Autor</span>
+          <span><i class="legend-icon document-mini"></i> Publicação</span>
+        </div>
+      </div>
+
+      <div class="graph-wrap">
+        <div id="cy" class="cy"></div>
+        <div id="graphEmpty" class="graph-empty" hidden>Nenhum resultado para os filtros atuais.</div>
+
+        <div class="graph-controls">
+          <button id="zoomOut" class="graph-button" aria-label="Diminuir zoom">−</button>
+          <button id="fitGraph" class="graph-button" aria-label="Enquadrar grafo">
+            <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg>
+          </button>
+          <button id="zoomIn" class="graph-button" aria-label="Aumentar zoom">+</button>
+          <select id="layoutSelect" class="layout-select" aria-label="Layout do grafo">
+            <option value="cose">Orgânico</option>
+            <option value="concentric">Radial</option>
+            <option value="circle">Circular</option>
+            <option value="grid">Grade</option>
+          </select>
+        </div>
+
+        <div id="selectionHint" class="selection-hint">Selecione um autor ou publicação para explorar</div>
+      </div>
+    </section>
+
+    <aside id="detailPanel" class="card detail-card">
+      <div class="card-head detail-head">
+        <div>
+          <span class="eyebrow">Contexto</span>
+          <h2>Detalhes</h2>
+        </div>
+        <button id="closeDetail" class="icon-button panel-close mobile-only" aria-label="Fechar detalhes">×</button>
+      </div>
+      <div id="detailBody" class="detail-body"></div>
+    </aside>
+
+    <div id="mobileScrim" class="mobile-scrim"></div>
+  </section>
+</main>
+
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
-<script src="./app-core.js?v=6"></script>
-<script src="./app-ui.js?v=6"></script>
-<script src="./layout-enhancements.js?v=4"></script>
-<script src="./mobile-enhancements.js?v=5"></script>
-<script src="./icon-enhancements.js?v=7"></script>
+<script src="./app-redesign.js?v=10"></script>
 </body>
 </html>
