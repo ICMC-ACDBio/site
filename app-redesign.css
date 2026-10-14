@@ -38,7 +38,11 @@ svg{display:block}
 .segment{height:35px;display:flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:9px;background:transparent;color:#6b7480;font-size:11px}
 .segment svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .segment.active{background:#fff;color:#222831;box-shadow:0 2px 8px rgba(25,33,43,.07)}
-.panel-search{height:37px;margin:0 14px 10px;background:#fafbfc}
+.explorer-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:0 14px 10px}
+.panel-search{height:37px;margin:0;background:#fafbfc}
+.sort-control{height:37px;display:flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fafbfc;border-radius:12px;padding:0 8px}
+.sort-control svg{width:15px;height:15px;stroke:#8a94a0;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.sort-control select{border:0;outline:0;background:transparent;color:#68727e;font-size:10px;max-width:84px;cursor:pointer}
 .explorer-list{flex:1;min-height:0;overflow:auto;padding:2px 8px 12px;scrollbar-gutter:stable}
 .explorer-list::-webkit-scrollbar,.detail-body::-webkit-scrollbar{width:9px}
 .explorer-list::-webkit-scrollbar-thumb,.detail-body::-webkit-scrollbar-thumb{background:#d2d7dc;border:2px solid transparent;background-clip:padding-box;border-radius:99px}
@@ -168,3 +172,9 @@ svg{display:block}
 .filter-chip[data-filter="Artigo de periódico"].active{background:var(--journal);border-color:var(--journal);color:#fff}
 .filter-chip[data-filter="Artigo em congresso"].active{background:var(--conference);border-color:var(--conference);color:#fff}
 .filter-chip[data-filter="Tese de doutorado"].active{background:var(--thesis);border-color:var(--thesis);color:#fff}
+
+@media(max-width:420px){
+  .explorer-tools{grid-template-columns:1fr}
+  .sort-control{justify-content:space-between}
+  .sort-control select{max-width:none;width:100%}
+}
