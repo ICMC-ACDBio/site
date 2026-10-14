@@ -1,6 +1,6 @@
 (()=>{
 const $=id=>document.getElementById(id);
-const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null,dragRaf:null,sort:'date-desc'};
+const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null,dragRaf:null,sort:'date-desc',publicationSort:'date-desc',authorSort:'name-asc'};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -262,6 +262,19 @@ function publicationGroupLabel(type){
   return type==='Artigo de periódico'?'Artigos em periódicos':type==='Artigo em congresso'?'Anais de congressos':'Teses de doutorado';
 }
 
+function syncSortOptions(){
+  const select=$('sortSelect');
+  if(!select)return;
+  if(state.tab==='authors'){
+    select.innerHTML='<option value="name-asc">Nome A–Z</option><option value="name-desc">Nome Z–A</option>';
+    state.sort=state.authorSort;
+  }else{
+    select.innerHTML='<option value="date-desc">Data ↓</option><option value="date-asc">Data ↑</option><option value="name-asc">Nome A–Z</option><option value="name-desc">Nome Z–A</option>';
+    state.sort=state.publicationSort;
+  }
+  select.value=state.sort;
+}
+
 function renderExplorer(){
   const list=$('explorerList'),q=norm(state.sideQuery);
   if(state.tab==='publications'){
@@ -406,7 +419,10 @@ function closeDetail(){$('detailPanel').classList.remove('mobile-open');if(!$('e
 
 function bindUI(){
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
-    state.tab=b.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));renderExplorer()
+    state.tab=b.dataset.tab;
+    document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));
+    syncSortOptions();
+    renderExplorer();
   });
   document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{
     state.filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));renderExplorer();renderGraph(true)
@@ -415,6 +431,8 @@ function bindUI(){
   $('sideSearch').oninput=e=>{state.sideQuery=e.target.value;renderExplorer()};
   $('sortSelect').onchange=e=>{
     state.sort=e.target.value;
+    if(state.tab==='authors') state.authorSort=state.sort;
+    else state.publicationSort=state.sort;
     renderExplorer();
   };
   $('layoutSelect').onchange=()=>state.cy?.layout(layoutOptions()).run();
@@ -429,7 +447,7 @@ function bindUI(){
 }
 
 Promise.all([get('authors'),get('articles'),get('authored')]).then(data=>{
-  setup(data);bindUI();renderExplorer();renderEmptyDetail();bootGraph();updateStatus();
+  setup(data);bindUI();syncSortOptions();renderExplorer();renderEmptyDetail();bootGraph();updateStatus();
 }).catch(err=>{
   console.error(err);$('statusText').textContent='Falha ao carregar a base';$('detailBody').innerHTML=`<div class="empty-detail">Erro ao carregar dados: ${esc(err.message)}</div>`
 });
