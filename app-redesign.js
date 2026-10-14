@@ -8,13 +8,21 @@ const initials=name=>String(name||'').split(/\s+/).filter(Boolean).slice(0,2).ma
 const shorten=(s,n=38)=>String(s||'').length>n?String(s).slice(0,n-1)+'…':String(s||'');
 
 const PERSON_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="19" r="10.5" fill="none" stroke="#4f7792" stroke-width="4"/><path d="M12 55c2.8-14 9.7-20.5 20-20.5S49.2 41 52 55" fill="none" stroke="#4f7792" stroke-width="4" stroke-linecap="round"/></svg>`;
-const DOC_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><path d="M13 5h26l13 13v49H13z" fill="white" stroke="#c86f3d" stroke-width="3.5" stroke-linejoin="round"/><path d="M39 5v14h13M21 31h23M21 41h23M21 51h17" fill="none" stroke="#c86f3d" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const JOURNAL_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><path d="M13 5h26l13 13v49H13z" fill="none" stroke="#3b82f6" stroke-width="3.6" stroke-linejoin="round"/><path d="M39 5v14h13M21 31h23M21 41h23M21 51h17" fill="none" stroke="#3b82f6" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CONFERENCE_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><rect x="10" y="9" width="44" height="35" rx="4" fill="none" stroke="#f59e0b" stroke-width="3.6"/><path d="M20 21h24M20 30h15M32 44v14M22 62l10-4 10 4" fill="none" stroke="#f59e0b" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const THESIS_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><path d="M9 15c8-3 15-2 23 3v42c-8-5-15-6-23-3zM55 15c-8-3-15-2-23 3v42c8-5 15-6 23-3z" fill="none" stroke="#8b5cf6" stroke-width="3.5" stroke-linejoin="round"/><path d="M16 27h9M16 36h9M39 27h9M39 36h9" stroke="#8b5cf6" stroke-width="3.2" stroke-linecap="round"/></svg>`;
 const PERSON_URI='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(PERSON_SVG);
-const DOC_URI='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(DOC_SVG);
+const JOURNAL_URI='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(JOURNAL_SVG);
+const CONFERENCE_URI='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(CONFERENCE_SVG);
+const THESIS_URI='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(THESIS_SVG);
 
-const iconSvg=type=>type==='Author'
-?`<svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.2"></circle><path d="M5.8 20c.8-4.4 3-6.4 6.2-6.4s5.4 2 6.2 6.4"></path></svg>`
-:`<svg viewBox="0 0 24 24"><path d="M6 2.8h8l4 4V21H6z"></path><path d="M14 2.8V7h4M9 12h6M9 15.5h6"></path></svg>`;
+const publicationClass=type=>type==='Artigo de periódico'?'journal':type==='Artigo em congresso'?'conference':type==='Tese de doutorado'?'thesis':'publication';
+const iconSvg=type=>{
+  if(type==='Author') return `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.2"></circle><path d="M5.8 20c.8-4.4 3-6.4 6.2-6.4s5.4 2 6.2 6.4"></path></svg>`;
+  if(type==='Artigo em congresso') return `<svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="12" rx="1.8"></rect><path d="M7 8h10M7 11h6M12 16v4M8.5 21l3.5-1 3.5 1"></path></svg>`;
+  if(type==='Tese de doutorado') return `<svg viewBox="0 0 24 24"><path d="M3.5 5.5c3-1.1 5.6-.8 8.5 1.2V20c-2.9-2-5.5-2.3-8.5-1.2zM20.5 5.5c-3-1.1-5.6-.8-8.5 1.2V20c2.9-2 5.5-2.3 8.5-1.2z"></path><path d="M6.5 10h3M14.5 10h3"></path></svg>`;
+  return `<svg viewBox="0 0 24 24"><path d="M6 2.8h8l4 4V21H6z"></path><path d="M14 2.8V7h4M9 12h6M9 15.5h6"></path></svg>`;
+};
 
 async function get(name){
   const r=await fetch(`./data/${name}.json?v=10`,{cache:'no-store'});
@@ -80,8 +88,11 @@ function cyStyles(){
       width:'data(size)',height:'data(size)','background-image':PERSON_URI,label:'data(label)'
     }},
     {selector:'node[node_type="Article"]',style:{
-      width:44,height:52,'background-image':DOC_URI,label:''
+      width:50,height:58,label:''
     }},
+    {selector:'node[publication_type="Artigo de periódico"]',style:{'background-image':JOURNAL_URI}},
+    {selector:'node[publication_type="Artigo em congresso"]',style:{'background-image':CONFERENCE_URI,width:54,height:58}},
+    {selector:'node[publication_type="Tese de doutorado"]',style:{'background-image':THESIS_URI,width:56,height:60}},
     {selector:'edge',style:{
       width:1.15,opacity:.28,'line-color':'#9eb0bd','curve-style':'bezier'
     }},
@@ -93,9 +104,10 @@ function cyStyles(){
     {selector:'node:selected',style:{
       'underlay-color':'#3d6681','underlay-opacity':.13,'underlay-padding':10
     }},
-    {selector:'node[node_type="Article"]:selected',style:{
-      label:'data(short_label)','underlay-color':'#c86f3d','underlay-opacity':.12,'underlay-padding':10
-    }}
+    {selector:'node[node_type="Article"]:selected',style:{label:'data(short_label)','underlay-opacity':.13,'underlay-padding':10}},
+    {selector:'node[publication_type="Artigo de periódico"]:selected',style:{'underlay-color':'#3b82f6'}},
+    {selector:'node[publication_type="Artigo em congresso"]:selected',style:{'underlay-color':'#f59e0b'}},
+    {selector:'node[publication_type="Tese de doutorado"]:selected',style:{'underlay-color':'#8b5cf6'}}
   ];
 }
 
@@ -196,8 +208,8 @@ function renderExplorer(){
       const items=arr.filter(a=>a.publication_type===type);
       if(!items.length)return'';
       return `<div class="list-group-title">${publicationGroupLabel(type)} · ${items.length}</div>`+
-        items.map(a=>`<button class="explorer-item publication ${state.selectedId===a.id?'active':''}" data-node="${esc(a.id)}">
-          <span class="item-icon">${iconSvg('Article')}</span>
+        items.map(a=>`<button class="explorer-item publication ${publicationClass(a.publication_type)} ${state.selectedId===a.id?'active':''}" data-node="${esc(a.id)}">
+          <span class="item-icon">${iconSvg(a.publication_type)}</span>
           <span class="item-copy"><span class="item-title">${esc(a.title)}</span><span class="item-meta">${a.year} · ${esc(a.venue||'')}</span></span>
           <span class="item-count">›</span>
         </button>`).join('');
@@ -266,8 +278,8 @@ function renderAuthorDetail(a){
     <div class="detail-section">
       <h3>Publicações relacionadas · ${pubs.length}</h3>
       <div class="related-grid">
-      ${pubs.map(p=>`<button class="related-card publication" data-node="${esc(p.id)}">
-        <span class="avatar-sm">${iconSvg('Article')}</span>
+      ${pubs.map(p=>`<button class="related-card publication ${publicationClass(p.publication_type)}" data-node="${esc(p.id)}">
+        <span class="avatar-sm">${iconSvg(p.publication_type)}</span>
         <span><span class="related-name">${esc(p.title)}</span><span class="related-meta">${p.year} · ${esc(p.publication_type)}</span></span>
         <span class="chevron">›</span>
       </button>`).join('')}
@@ -280,8 +292,8 @@ function renderArticleDetail(p){
   const authors=[...(state.adj.get(p.id)||[])].map(id=>state.nodeMap.get(id)).filter(n=>n?.node_type==='Author');
   $('detailBody').innerHTML=`
     <div class="profile-hero">
-      <div class="publication-hero-icon">${iconSvg('Article')}</div>
-      <div class="badges"><span class="badge">${esc(p.publication_type)}</span><span class="badge">${p.year}</span></div>
+      <div class="publication-hero-icon ${publicationClass(p.publication_type)}">${iconSvg(p.publication_type)}</div>
+      <div class="badges"><span class="badge type-badge ${publicationClass(p.publication_type)}">${esc(p.publication_type)}</span><span class="badge">${p.year}</span></div>
       <h1 class="hero-title">${esc(p.title)}</h1>
       <div class="hero-meta">${esc(p.venue||'')}${p.volume?` · v. ${esc(p.volume)}`:''}${p.pages?` · ${esc(p.pages)}`:''}</div>
       <div class="detail-actions">${externalLink(p.url,'Abrir DOI',true)}</div>
