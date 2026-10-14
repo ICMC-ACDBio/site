@@ -1,6 +1,6 @@
 (()=>{
 const $=id=>document.getElementById(id);
-const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null};
+const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null,dragRaf:null};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -127,34 +127,61 @@ function bootGraph(){
   state.cy.on('tap','node',e=>selectNode(e.target.id(),{center:false,source:'graph'}));
   state.cy.on('tap',e=>{if(e.target===state.cy) clearSelection()});
 
+  const stopDragSpring=()=>{
+    if(state.dragRaf){cancelAnimationFrame(state.dragRaf);state.dragRaf=null}
+  };
+
+  const runDragSpring=()=>{
+    stopDragSpring();
+    const tick=()=>{
+      const d=state.dragFollow;
+      if(!d){state.dragRaf=null;return}
+      let moving=false;
+      state.cy.batch(()=>{
+        d.followers.forEach(f=>{
+          const node=state.cy.getElementById(f.id);
+          if(!node.length)return;
+          const p=node.position();
+          const tx=f.baseX+d.dx*f.factor;
+          const ty=f.baseY+d.dy*f.factor;
+          const nx=p.x+(tx-p.x)*.34;
+          const ny=p.y+(ty-p.y)*.34;
+          if(Math.abs(tx-p.x)>.3||Math.abs(ty-p.y)>.3)moving=true;
+          node.position({x:nx,y:ny});
+        });
+      });
+      if(d.active||moving) state.dragRaf=requestAnimationFrame(tick);
+      else{state.dragFollow=null;state.dragRaf=null}
+    };
+    state.dragRaf=requestAnimationFrame(tick);
+  };
+
   state.cy.on('grab','node[node_type="Author"]',e=>{
     const author=e.target;
     const start=author.position();
-    const followers=author.neighborhood('node[node_type="Article"]').map(article=>{
-      const degree=Math.max(1,article.connectedEdges().length);
-      const factor=Math.max(.16,.32/Math.sqrt(Math.max(1,degree/2)));
+    const followers=[];
+    author.neighborhood('node[node_type="Article"]').forEach(article=>{
       const pos=article.position();
-      return {id:article.id(),x:pos.x,y:pos.y,factor};
+      const authorDegree=Math.max(1,article.neighborhood('node[node_type="Author"]').length);
+      const factor=authorDegree<=2?.82:authorDegree<=4?.72:.60;
+      followers.push({id:article.id(),baseX:pos.x,baseY:pos.y,factor});
     });
-    state.dragFollow={authorId:author.id(),startX:start.x,startY:start.y,followers};
+    state.dragFollow={authorId:author.id(),startX:start.x,startY:start.y,dx:0,dy:0,followers,active:true};
     spotlight(author.id());
+    runDragSpring();
   });
 
   state.cy.on('drag','node[node_type="Author"]',e=>{
-    if(!state.dragFollow||state.dragFollow.authorId!==e.target.id())return;
+    const d=state.dragFollow;
+    if(!d||d.authorId!==e.target.id())return;
     const pos=e.target.position();
-    const dx=pos.x-state.dragFollow.startX;
-    const dy=pos.y-state.dragFollow.startY;
-    state.cy.batch(()=>{
-      state.dragFollow.followers.forEach(f=>{
-        const node=state.cy.getElementById(f.id);
-        if(node.length) node.position({x:f.x+dx*f.factor,y:f.y+dy*f.factor});
-      });
-    });
+    d.dx=pos.x-d.startX;
+    d.dy=pos.y-d.startY;
   });
 
   state.cy.on('free','node[node_type="Author"]',e=>{
-    if(state.dragFollow?.authorId===e.target.id())state.dragFollow=null;
+    const d=state.dragFollow;
+    if(d&&d.authorId===e.target.id())d.active=false;
     restoreSpotlight();
   });
   const empty=$('graphEmpty');
