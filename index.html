@@ -57,9 +57,20 @@
         </button>
       </div>
 
-      <div class="panel-search">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
-        <input id="sideSearch" placeholder="Filtrar lista">
+      <div class="explorer-tools">
+        <div class="panel-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+          <input id="sideSearch" placeholder="Filtrar lista">
+        </div>
+        <div class="sort-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h10M8 12h7M8 18h4M4 5v14M2 17l2 2 2-2"></path></svg>
+          <select id="sortSelect" aria-label="Ordenar lista">
+            <option value="date-desc">Data ↓</option>
+            <option value="date-asc">Data ↑</option>
+            <option value="name-asc">Nome A–Z</option>
+            <option value="name-desc">Nome Z–A</option>
+          </select>
+        </div>
       </div>
 
       <div id="explorerList" class="explorer-list"></div>
@@ -117,6 +128,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
-<script src="./app-redesign.js?v=15"></script>
+<script src="./app-redesign.js?v=16"></script>
 </body>
 </html>
