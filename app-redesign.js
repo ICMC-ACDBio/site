@@ -126,6 +126,8 @@ function bootGraph(){
   state.cy.on('mouseout','node',()=>restoreSpotlight());
   state.cy.on('tap','node',e=>selectNode(e.target.id(),{center:false,source:'graph'}));
   state.cy.on('tap',e=>{if(e.target===state.cy) clearSelection()});
+  const empty=$('graphEmpty');
+  if(empty){empty.hidden=true;empty.style.display='none';empty.style.pointerEvents='none'}
   state.cy.one('layoutstop',()=>setTimeout(fitGraph,40));
 }
 
@@ -134,7 +136,12 @@ function renderGraph(relayout=true){
   const selected=state.selectedId;
   state.cy.elements().remove();
   state.cy.add(graphElements());
-  $('graphEmpty').hidden=state.cy.nodes().length>0;
+  const empty=$('graphEmpty');
+  if(empty){
+    empty.hidden=state.cy.nodes().length>0;
+    empty.style.display=state.cy.nodes().length>0?'none':'grid';
+    empty.style.pointerEvents='none';
+  }
   if(relayout&&state.cy.nodes().length) state.cy.layout(layoutOptions()).run();
   if(selected&&state.cy.getElementById(selected).length){
     state.cy.getElementById(selected).select();
