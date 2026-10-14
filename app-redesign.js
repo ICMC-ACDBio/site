@@ -1,6 +1,6 @@
 (()=>{
 const $=id=>document.getElementById(id);
-const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null};
+const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -126,6 +126,37 @@ function bootGraph(){
   state.cy.on('mouseout','node',()=>restoreSpotlight());
   state.cy.on('tap','node',e=>selectNode(e.target.id(),{center:false,source:'graph'}));
   state.cy.on('tap',e=>{if(e.target===state.cy) clearSelection()});
+
+  state.cy.on('grab','node[node_type="Author"]',e=>{
+    const author=e.target;
+    const start=author.position();
+    const followers=author.neighborhood('node[node_type="Article"]').map(article=>{
+      const degree=Math.max(1,article.connectedEdges().length);
+      const factor=Math.max(.16,.32/Math.sqrt(Math.max(1,degree/2)));
+      const pos=article.position();
+      return {id:article.id(),x:pos.x,y:pos.y,factor};
+    });
+    state.dragFollow={authorId:author.id(),startX:start.x,startY:start.y,followers};
+    spotlight(author.id());
+  });
+
+  state.cy.on('drag','node[node_type="Author"]',e=>{
+    if(!state.dragFollow||state.dragFollow.authorId!==e.target.id())return;
+    const pos=e.target.position();
+    const dx=pos.x-state.dragFollow.startX;
+    const dy=pos.y-state.dragFollow.startY;
+    state.cy.batch(()=>{
+      state.dragFollow.followers.forEach(f=>{
+        const node=state.cy.getElementById(f.id);
+        if(node.length) node.position({x:f.x+dx*f.factor,y:f.y+dy*f.factor});
+      });
+    });
+  });
+
+  state.cy.on('free','node[node_type="Author"]',e=>{
+    if(state.dragFollow?.authorId===e.target.id())state.dragFollow=null;
+    restoreSpotlight();
+  });
   const empty=$('graphEmpty');
   if(empty){empty.hidden=true;empty.style.display='none';empty.style.pointerEvents='none'}
   state.cy.one('layoutstop',()=>setTimeout(fitGraph,40));
