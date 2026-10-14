@@ -1,6 +1,6 @@
 (()=>{
 const $=id=>document.getElementById(id);
-const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null,dragRaf:null};
+const state={authors:[],articles:[],edges:[],nodeMap:new Map(),adj:new Map(),cy:null,tab:'publications',filter:'all',query:'',sideQuery:'',selectedId:null,dragFollow:null,dragRaf:null,sort:'date-desc'};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -266,8 +266,14 @@ function renderExplorer(){
   const list=$('explorerList'),q=norm(state.sideQuery);
   if(state.tab==='publications'){
     let arr=state.articles.filter(a=>state.filter==='all'||a.publication_type===state.filter)
-      .filter(a=>!q||norm([a.title,a.doi,a.venue,a.year].join(' ')).includes(q))
-      .sort((a,b)=>(b.year-a.year)||a.title.localeCompare(b.title));
+      .filter(a=>!q||norm([a.title,a.doi,a.venue,a.year].join(' ')).includes(q));
+    const sorters={
+      'date-desc':(a,b)=>(b.year-a.year)||a.title.localeCompare(b.title),
+      'date-asc':(a,b)=>(a.year-b.year)||a.title.localeCompare(b.title),
+      'name-asc':(a,b)=>a.title.localeCompare(b.title,'pt-BR',{sensitivity:'base'}),
+      'name-desc':(a,b)=>b.title.localeCompare(a.title,'pt-BR',{sensitivity:'base'})
+    };
+    arr.sort(sorters[state.sort]||sorters['date-desc']);
     const groups=['Artigo de periódico','Artigo em congresso','Tese de doutorado'];
     list.innerHTML=groups.map(type=>{
       const items=arr.filter(a=>a.publication_type===type);
@@ -281,7 +287,9 @@ function renderExplorer(){
     }).join('')||`<div class="empty-detail">Nenhuma publicação encontrada.</div>`;
   }else{
     let arr=state.authors.filter(a=>!q||norm([a.label,a.institution_hint,a.orcid].join(' ')).includes(q))
-      .sort((a,b)=>a.label.localeCompare(b.label));
+      .sort((a,b)=>state.sort==='name-desc'
+        ?b.label.localeCompare(a.label,'pt-BR',{sensitivity:'base'})
+        :a.label.localeCompare(b.label,'pt-BR',{sensitivity:'base'}));
     if(state.filter!=='all'){
       arr=arr.filter(a=>[...(state.adj.get(a.id)||[])].some(id=>state.nodeMap.get(id)?.publication_type===state.filter));
     }
@@ -405,6 +413,10 @@ function bindUI(){
   });
   $('globalSearch').oninput=e=>{state.query=e.target.value;renderExplorer();renderGraph(false)};
   $('sideSearch').oninput=e=>{state.sideQuery=e.target.value;renderExplorer()};
+  $('sortSelect').onchange=e=>{
+    state.sort=e.target.value;
+    renderExplorer();
+  };
   $('layoutSelect').onchange=()=>state.cy?.layout(layoutOptions()).run();
   $('zoomOut').onclick=()=>state.cy?.zoom({level:Math.max(.2,state.cy.zoom()/1.18),renderedPosition:{x:state.cy.width()/2,y:state.cy.height()/2}});
   $('zoomIn').onclick=()=>state.cy?.zoom({level:Math.min(3.2,state.cy.zoom()*1.18),renderedPosition:{x:state.cy.width()/2,y:state.cy.height()/2}});
