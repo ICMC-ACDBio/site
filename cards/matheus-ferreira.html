@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  /* Configuração geral */
+  body {
+    margin: 0;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    background-color: transparent;
+  }
+
+  /* Oculta as barras de rolagem no Chrome, Safari e Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Oculta as barras de rolagem no IE, Edge e Firefox, e evita rolagem no body */
+  body, html {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;     /* Firefox */
+    overflow: hidden;          /* Esconde qualquer conteúdo que ultrapasse o limite */
+  }
+
+  /* Container que alinha os cards horizontalmente */
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os cards quebrem a linha em telas pequenas */
+    gap: 20px;       /* Espaçamento entre os cards */
+    justify-content: center;
+  }
+
+  /* Estilo individual de cada card */
+  .card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    width: calc(25% - 20px); 
+    min-width: 250px;
+    overflow: hidden;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
+  .card-text {
+    padding: 15px;
+    text-align: center;
+    color: #333;
+    flex-grow: 1;
+  }
+
+  .buttons-container {
+    display: grid;
+    grid-template-columns: max-content max-content; 
+    justify-content: center;
+    row-gap: 12px;
+    column-gap: 40px;
+    padding: 0 15px 20px 15px;
+  }
+
+  /* Estilo do link (sem aparência de botão) */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    color: #797E86;         
+    text-decoration: none;  
+    font-size: 14px;
+    font-weight: bold;
+    transition: color 0.2s; 
+  }
+
+  /* Efeito ao passar o mouse */
+  .btn:hover {
+    color: #5F6368;
+    text-decoration: none;
+  }
+
+  /* Logo de dentro do link (mantido igual) */
+  .btn-logo {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+  }
+</style>
+</head>
+
+
+<body>
+<div class="cards-container">
+  <div class="card">
+    <img src="https://raw.githubusercontent.com/ICMC-ACDBio/site/refs/heads/add-foto/assets/fotos/matheus-ferreira.jpg" alt="Foto" class="card-img">
+    <div class="card-text">
+      <h3>Matheus Ferreira dos Santos</h3>
+
+    </div>
+    <div class="buttons-container">
+      <a href="mailto:matheusfsantos@usp.br" class="btn" target="_blank">
+        <img src="https://raw.githubusercontent.com/paulo-ribeiro/acdbio_site/refs/heads/main/logos/email_logo.png" class="btn-logo"> E-mail
+      </a>
+      <a href="https://lattes.cnpq.br/4257743683418239" class="btn" target="_blank">
+        <img src="https://raw.githubusercontent.com/paulo-ribeiro/acdbio_site/refs/heads/main/logos/lattes_logo.png" class="btn-logo"> Lattes
+      </a>
+      <a href="https://www.linkedin.com/in/matheus-f-d-santos/" class="btn" target="_blank">
+        <img src="https://raw.githubusercontent.com/paulo-ribeiro/acdbio_site/refs/heads/main/logos/linkedin_logo.png" class="btn-logo"> LinkedIn
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+
+
+</html>
